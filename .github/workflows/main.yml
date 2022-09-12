@@ -20,7 +20,7 @@ jobs:
       - name: Install modules
         run: npm i -f
       - name: Build application
-        run: npm run build
+        run: set REACT_APP_NOT_SECRET_CODE=${{ secrets.REACT_APP_WEATHER_API_KEY }} && npm run build
       - name: Deploy to S3
         run: aws s3 sync ./build/ s3://${{ secrets.BUCKET_ID }}
       - name: Create CloudFront invalidation
