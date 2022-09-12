@@ -3,6 +3,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -16,12 +17,13 @@ import useFetch from '../hooks/useFetch';
 import {
 	capitalizeFirstLetter,
 	changeTempFromKelvinToCelsiusOrFahrenheit,
-	formatAMPM
+	formatAMPM,
 } from '../utils/commonFunctions';
 function CurrentWeatherInfoCard(props) {
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
+	const [shouldViewAdditionInfo, setShouldViewAdditionInfo] = useState(false);
 	const { zipCode = '10001' } = props;
-	const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1rahul`;
+	const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=${process.env.REACT_APP_WEATHER_API_KEY}`;
 	const { data: rawCurrentDayForecast, loading } = useFetch(url);
 	const currentDayForecastData = getCurrentDayForecast(
 		rawCurrentDayForecast,
@@ -62,10 +64,10 @@ function CurrentWeatherInfoCard(props) {
 						<Grid
 							container
 							spacing={{ xs: 1, md: 2 }}
-							columns={{ xs: 4, md: 12 }}
+							columns={{ xs: 4, sm: 12, md: 12 }}
 							key={section.name}
 						>
-							<Grid item xs={4} md={5}>
+							<Grid item xs={4} sm={7} md={5}>
 								<Typography
 									fontSize={'1.5rem'}
 									width='100%'
@@ -79,7 +81,7 @@ function CurrentWeatherInfoCard(props) {
 									{section.name}
 								</Typography>
 							</Grid>
-							<Grid item xs={4} md={1}>
+							<Grid item xs={4} sm={1} md={1}>
 								<Typography
 									fontSize={'1.5rem'}
 									width='100%'
@@ -107,7 +109,7 @@ function CurrentWeatherInfoCard(props) {
 					direction='row'
 					alignItems='center'
 					spacing={2}
-					sx={{ marginTop: 4 }}
+					sx={{ marginTop: 4, marginBottom: 4 }}
 				>
 					<Tooltip title='Sunrise Time'>
 						<Avatar
@@ -146,6 +148,33 @@ function CurrentWeatherInfoCard(props) {
 			</>
 		);
 	}, [windSpeed, pressure, humidity, sunsetTime, sunriseTime]);
+
+	const additionInfoViewSwitch = (
+		<Stack
+			direction='row'
+			spacing={1}
+			justifyContent='center'
+			alignItems='center'
+		>
+			<Tooltip title='Hide Additional Info'>
+				<Typography>Hide</Typography>
+			</Tooltip>
+
+			<Switch
+				checked={shouldViewAdditionInfo}
+				onChange={() =>
+					setShouldViewAdditionInfo(!shouldViewAdditionInfo)
+				}
+				inputProps={{
+					'aria-label':
+						'Temperature unit switch for current day forecast',
+				}}
+			/>
+			<Tooltip title='Show Additional Info'>
+				<Typography>Show</Typography>
+			</Tooltip>
+		</Stack>
+	);
 	return (
 		<Card sx={{ marginTop: 2, padding: 2 }}>
 			<Stack
@@ -158,7 +187,9 @@ function CurrentWeatherInfoCard(props) {
 					Current Weather
 				</Typography>
 				<Stack direction='row' spacing={1} alignItems='center'>
-					<Typography>C</Typography>
+					<Tooltip title='Temperature in celsius'>
+						<Typography>C</Typography>
+					</Tooltip>
 					<Switch
 						checked={currentTmpUnit === 'celsius' ? false : true}
 						onChange={() =>
@@ -173,94 +204,120 @@ function CurrentWeatherInfoCard(props) {
 								'Temperature unit switch for current day forecast',
 						}}
 					/>
-					<Typography>F</Typography>
+					<Tooltip title='Temperature in Fahrenheit'>
+						<Typography>F</Typography>
+					</Tooltip>
 				</Stack>
 			</Stack>
-			<Grid
-				container
-				spacing={{ xs: 2, md: 3 }}
-				columns={{ xs: 4, sm: 8, md: 12 }}
-			>
-				<Grid item xs={4} sm={4} md={6}>
-					<Box>
-						<Tooltip title='Location'>
-							<Typography
-								variant='h6'
-								gutterBottom
-								textAlign={'center'}
-								width='100%'
-								// fontSize={'3rem'}
-								sx={{ fontSize: { xs: '1.5rem', lg: '3rem' } }}
-							>
-								{cityName}
-							</Typography>
-						</Tooltip>
-
-						<Stack direction='row' alignItems='center' spacing={2}>
-							<Avatar
-								alt='Weather-icon'
-								src={tempIconUrl}
-								sx={{ width: 100, height: 100 }}
-							/>
-							<Tooltip title='Current temperature'>
+			{loading && (
+				<Box
+					sx={{
+						width: '100%',
+						display: 'flex',
+						justifyContent: 'center',
+					}}
+				>
+					<CircularProgress />
+				</Box>
+			)}
+			{!loading && (
+				<Grid
+					container
+					spacing={{ xs: 2, md: 3 }}
+					columns={{ xs: 4, sm: 8, md: 12 }}
+				>
+					<Grid item xs={4} sm={4} md={6}>
+						<Box>
+							<Tooltip title='Location'>
 								<Typography
+									variant='h6'
+									gutterBottom
+									textAlign={'center'}
+									width='100%'
+									// fontSize={'3rem'}
 									sx={{
-										fontSize: { xs: '3.5rem', md: '7rem' },
+										fontSize: { xs: '1.5rem', lg: '3rem' },
 									}}
 								>
-									{currentTemp}&deg;
+									{cityName}
 								</Typography>
 							</Tooltip>
-						</Stack>
-						<Tooltip title=' Current weather description'>
-							<Typography
-								variant='body1'
-								gutterBottom
-								textAlign={'center'}
-								width='100%'
-								fontSize={'1.5rem'}
+
+							<Stack
+								direction={{ xs: 'column', sm: 'row' }}
+								justifyContent='center'
+								alignItems='center'
+								spacing={2}
 							>
-								{weatherDescription}
-							</Typography>
-						</Tooltip>
-					</Box>
-				</Grid>
-				<Grid item xs={4} sm={4} md={6}>
-					<Stack
-						direction='row'
-						alignItems='center'
-						justifyContent={'center'}
-						spacing={2}
-						sx={{ marginBottom: 3 }}
-					>
-						<Tooltip title="Today's high temperature">
-							<ArrowUpwardIcon sx={{ fontSize: 24 }} />
-						</Tooltip>
+								<Avatar
+									alt='Weather-icon'
+									src={tempIconUrl}
+									sx={{ width: 100, height: 100 }}
+								/>
+								<Tooltip title='Current temperature'>
+									<Typography
+										sx={{
+											fontSize: {
+												xs: '3.5rem',
+												md: '7rem',
+											},
+										}}
+									>
+										{currentTemp}&deg;
+									</Typography>
+								</Tooltip>
+							</Stack>
+							<Tooltip title=' Current weather description'>
+								<Typography
+									variant='body1'
+									gutterBottom
+									textAlign={'center'}
+									width='100%'
+									fontSize={'1.5rem'}
+								>
+									{weatherDescription}
+								</Typography>
+							</Tooltip>
+						</Box>
+					</Grid>
+					<Grid item xs={4} sm={4} md={6}>
+						<Stack
+							direction='row'
+							alignItems='center'
+							justifyContent={'center'}
+							spacing={2}
+							sx={{ marginBottom: 3 }}
+						>
+							<Tooltip title="Today's high temperature">
+								<ArrowUpwardIcon sx={{ fontSize: 24 }} />
+							</Tooltip>
 
-						<Tooltip title="Today's high temperature">
-							<Typography
-								fontSize='1.5rem'
-								variant='button'
-								display='block'
-								gutterBottom
-							>{`${tempMax}\u00b0`}</Typography>
-						</Tooltip>
+							<Tooltip title="Today's high temperature">
+								<Typography
+									fontSize='1.5rem'
+									variant='button'
+									display='block'
+									gutterBottom
+								>{`${tempMax}\u00b0`}</Typography>
+							</Tooltip>
 
-						<Tooltip title="Today's low temperature">
-							<ArrowDownwardIcon sx={{ fontSize: 24 }} />
-						</Tooltip>
-						<Tooltip title="Today's low temperature">
-							<Typography
-								fontSize='1.5rem'
-								variant='button'
-								display='block'
-								gutterBottom
-							>{`${tempMin}\u00b0`}</Typography>
-						</Tooltip>
-					</Stack>
-					{renderAdditionalInfo}
+							<Tooltip title="Today's low temperature">
+								<ArrowDownwardIcon sx={{ fontSize: 24 }} />
+							</Tooltip>
+							<Tooltip title="Today's low temperature">
+								<Typography
+									fontSize='1.5rem'
+									variant='button'
+									display='block'
+									gutterBottom
+								>{`${tempMin}\u00b0`}</Typography>
+							</Tooltip>
+						</Stack>
+						{shouldViewAdditionInfo && renderAdditionalInfo}
+						{additionInfoViewSwitch}
+					</Grid>
 				</Grid>
-			</Grid>
+			)}
 		</Card>
 	);
 }

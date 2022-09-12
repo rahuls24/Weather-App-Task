@@ -7,18 +7,23 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { useMemo, useState } from 'react';
 import {
-    CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis,
-    YAxis
+	CartesianGrid,
+	Line,
+	LineChart,
+	ResponsiveContainer,
+	Tooltip as ChartTooltip,
+	XAxis,
+	YAxis,
 } from 'recharts';
 import useFetch from '../hooks/useFetch';
 import {
-    capitalizeFirstLetter,
-    changeTempFromKelvinToCelsiusOrFahrenheit
+	capitalizeFirstLetter,
+	changeTempFromKelvinToCelsiusOrFahrenheit,
 } from '../utils/commonFunctions';
 function WeekForecastChart(props) {
 	const { zipCode = '10001' } = props;
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
-	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1rahul`;
+	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=${process.env.REACT_APP_WEATHER_API_KEY}`;
 	const { data: rawNextSevenDaysForecast, loading } = useFetch(url);
 	const chartData = useMemo(() => {
 		if (rawNextSevenDaysForecast !== null) {
@@ -41,7 +46,7 @@ function WeekForecastChart(props) {
 					sx={{ marginBottom: { xs: 2, sm: 6 } }}
 				>
 					<Typography variant='h5' gutterBottom>
-						Current Weather
+						7 Days forecast
 					</Typography>
 					<Stack direction='row' spacing={1} alignItems='center'>
 						<Tooltip title='Temperature in celsius'>
