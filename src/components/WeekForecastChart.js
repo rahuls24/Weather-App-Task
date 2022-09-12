@@ -23,7 +23,8 @@ import {
 function WeekForecastChart(props) {
 	const { zipCode = '10001' } = props;
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
-	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=${process.env.REACT_APP_WEATHER_API_KEY}`;
+	// We can hide appid by using env var becz it is part of  query parameter
+	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1`;
 	const { data: rawNextSevenDaysForecast, loading } = useFetch(url);
 	const chartData = useMemo(() => {
 		if (rawNextSevenDaysForecast !== null) {
