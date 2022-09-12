@@ -1,11 +1,11 @@
 {
 	"name": "Weather App",
 	"short_name": "Weather",
-	"description": "A Simple Quiz App built using React.",
+	"description": "A Simple Weather App built using React.",
 	"lang": "en-US",
 	"start_url": "/",
 	"display": "standalone",
-	"theme_color": "#00BCD4",
+	"theme_color": "#1976d2",
 	"icons": [
 		{
 			"src": "favicon.ico",
