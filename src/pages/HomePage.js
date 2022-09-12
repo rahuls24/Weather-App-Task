@@ -16,6 +16,10 @@ import Avatar from '@mui/material/Avatar';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useMemo } from 'react';
+import sunsetIcon from '../assets/sunset.png';
+import sunriseIcon from '../assets/sunrise.png';
+import Tooltip from '@mui/material/Tooltip';
+import WeekForecastChart from '../components/WeekForecastChart';
 function HomePage() {
 	return (
 		<Container component='main' maxWidth='md'>
@@ -43,6 +47,7 @@ function HomePage() {
 				}}
 			/>
 			<WeatherInfoCard />
+			<WeekForecastChart />
 		</Container>
 	);
 }
@@ -50,19 +55,29 @@ function HomePage() {
 export default HomePage;
 
 function WeatherInfoCard(props) {
+	const {
+		windSpeed = 0,
+		humidity = 0,
+		pressure = 0,
+		sunsetTime = '',
+		sunriseTime = '',
+		cityName = '',
+		currentTemp = '',
+		weatherDescription = '',
+	} = props;
 	const renderAdditionalInfo = useMemo(() => {
 		const windSpeedHumidityAndPressureInfo = [
 			{
 				name: 'Wind Speed',
-				value: `${23}kph`,
+				value: `${windSpeed}kph`,
 			},
 			{
 				name: 'Humidity',
-				value: `${23}%`,
+				value: `${humidity}%`,
 			},
 			{
 				name: 'Pressure',
-				value: `${23}hPa`,
+				value: `${pressure}hPa`,
 			},
 		];
 		return (
@@ -90,35 +105,49 @@ function WeatherInfoCard(props) {
 						</Grid>
 					);
 				})}
-				<Stack direction='row' alignItems='center' spacing={2}>
-					<Avatar
-						alt='Remy Sharp'
-						src='http://openweathermap.org/img/wn/10d@2x.png'
-						sx={{ width: 56, height: 56 }}
-					/>
-					<Typography
-						variant='body1'
-						gutterBottom
-						fontSize={'1.5rem'}
-					>
-						{'06:23 AM'}
-					</Typography>
-					<Avatar
-						alt='Remy Sharp'
-						src='http://openweathermap.org/img/wn/10d@2x.png'
-						sx={{ width: 56, height: 56 }}
-					/>
-					<Typography
-						variant='body1'
-						gutterBottom
-						fontSize={'1.5rem'}
-					>
-						{'06:23 PM'}
-					</Typography>
+				<Stack
+					direction='row'
+					alignItems='center'
+					spacing={2}
+					sx={{ marginTop: 4 }}
+				>
+					<Tooltip title='Sunrise Time'>
+						<Avatar
+							alt='Sunrise Icon'
+							src={sunriseIcon}
+							sx={{ width: 56, height: 56 }}
+						/>
+					</Tooltip>
+					<Tooltip title='Sunrise Time'>
+						<Typography
+							variant='body1'
+							gutterBottom
+							fontSize={'1.5rem'}
+						>
+							{sunriseTime}
+						</Typography>
+					</Tooltip>
+					<Tooltip title='Sunset Time'>
+						<Avatar
+							alt='Sunset Icon'
+							src={sunsetIcon}
+							sx={{ width: 56, height: 56 }}
+						/>
+					</Tooltip>
+
+					<Tooltip title='Sunset Time'>
+						<Typography
+							variant='body1'
+							gutterBottom
+							fontSize={'1.5rem'}
+						>
+							{sunsetTime}
+						</Typography>
+					</Tooltip>
 				</Stack>
 			</>
 		);
-	}, []);
+	}, [windSpeed, pressure, humidity, sunsetTime, sunriseTime]);
 	return (
 		<Card sx={{ marginTop: 2, padding: 2 }}>
 			<Stack
@@ -131,12 +160,12 @@ function WeatherInfoCard(props) {
 					Current Weather
 				</Typography>
 				<Stack direction='row' spacing={1} alignItems='center'>
-					<Typography>Off</Typography>
+					<Typography>C</Typography>
 					<Switch
 						checked={true}
 						inputProps={{ 'aria-label': 'controlled' }}
 					/>
-					<Typography>On</Typography>
+					<Typography>F</Typography>
 				</Stack>
 			</Stack>
 			<Grid
@@ -146,35 +175,41 @@ function WeatherInfoCard(props) {
 			>
 				<Grid item xs={4} sm={4} md={6}>
 					<Box>
-						<Typography
-							variant='h6'
-							gutterBottom
-							textAlign={'center'}
-							width='100%'
-							fontSize={'3rem'}
-						>
-							{'New York'}
-						</Typography>
+						<Tooltip title='Location'>
+							<Typography
+								variant='h6'
+								gutterBottom
+								textAlign={'center'}
+								width='100%'
+								fontSize={'3rem'}
+							>
+								{'New York'}
+							</Typography>
+						</Tooltip>
+
 						<Stack direction='row' alignItems='center' spacing={2}>
 							<Avatar
-								alt='Remy Sharp'
+								alt='Weather-icon'
 								src='http://openweathermap.org/img/wn/10d@2x.png'
 								sx={{ width: 100, height: 100 }}
 							/>
-							<Typography fontSize={'7rem'}>
-								{'45'}&deg;
-							</Typography>
+							<Tooltip title='Current temperature'>
+								<Typography fontSize={'7rem'}>
+									{'45'}&deg;
+								</Typography>
+							</Tooltip>
 						</Stack>
-
-						<Typography
-							variant='body1'
-							gutterBottom
-							textAlign={'center'}
-							width='100%'
-							fontSize={'1.5rem'}
-						>
-							{'light rain'}
-						</Typography>
+						<Tooltip title=' Current weather description'>
+							<Typography
+								variant='body1'
+								gutterBottom
+								textAlign={'center'}
+								width='100%'
+								fontSize={'1.5rem'}
+							>
+								{'light rain'}
+							</Typography>
+						</Tooltip>
 					</Box>
 				</Grid>
 				<Grid item xs={4} sm={4} md={6}>
@@ -185,20 +220,30 @@ function WeatherInfoCard(props) {
 						spacing={2}
 						sx={{ marginBottom: 3 }}
 					>
-						<ArrowUpwardIcon sx={{ fontSize: 24 }} />
-						<Typography
-							fontSize='1.5rem'
-							variant='button'
-							display='block'
-							gutterBottom
-						>{`${56}\u00b0`}</Typography>
-						<ArrowDownwardIcon sx={{ fontSize: 24 }} />
-						<Typography
-							fontSize='1.5rem'
-							variant='button'
-							display='block'
-							gutterBottom
-						>{`${46}\u00b0`}</Typography>
+						<Tooltip title="Today's high temperature">
+							<ArrowUpwardIcon sx={{ fontSize: 24 }} />
+						</Tooltip>
+
+						<Tooltip title="Today's high temperature">
+							<Typography
+								fontSize='1.5rem'
+								variant='button'
+								display='block'
+								gutterBottom
+							>{`${56}\u00b0`}</Typography>
+						</Tooltip>
+
+						<Tooltip title="Today's low temperature">
+							<ArrowDownwardIcon sx={{ fontSize: 24 }} />
+						</Tooltip>
+						<Tooltip title="Today's low temperature">
+							<Typography
+								fontSize='1.5rem'
+								variant='button'
+								display='block'
+								gutterBottom
+							>{`${46}\u00b0`}</Typography>
+						</Tooltip>
 					</Stack>
 					{renderAdditionalInfo}
 				</Grid>
