@@ -3,7 +3,7 @@ name: Deploy On AWS
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
