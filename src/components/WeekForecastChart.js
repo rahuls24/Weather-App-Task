@@ -1,30 +1,25 @@
-import React, { useMemo, useState } from 'react';
-import useFetch from '../hooks/useFetch';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import {
-	ResponsiveContainer,
-	LineChart,
-	CartesianGrid,
-	XAxis,
-	YAxis,
-	Line,
-	Tooltip as ChartTooltip,
-} from 'recharts';
-import {
-	capitalizeFirstLetter,
-	changeTempFromKelvinToCelsiusOrFahrenheit,
-} from '../utils/commonFunctions';
 import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import React, { useMemo, useState } from 'react';
+import {
+    CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis,
+    YAxis
+} from 'recharts';
+import useFetch from '../hooks/useFetch';
+import {
+    capitalizeFirstLetter,
+    changeTempFromKelvinToCelsiusOrFahrenheit
+} from '../utils/commonFunctions';
 function WeekForecastChart(props) {
 	const { zipCode = '10001' } = props;
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
 	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1rahul`;
-	const { data: rawNextSevenDaysForecast, loading, error } = useFetch(url);
+	const { data: rawNextSevenDaysForecast, loading } = useFetch(url);
 	const chartData = useMemo(() => {
 		if (rawNextSevenDaysForecast !== null) {
 			const nextSevenDaysWeatherForecastsData =
@@ -36,7 +31,6 @@ function WeekForecastChart(props) {
 		}
 		return [];
 	}, [rawNextSevenDaysForecast, currentTmpUnit]);
-	console.log('pant', chartData);
 	return (
 		<>
 			<Card sx={{ marginTop: 2, padding: 2 }}>
@@ -65,7 +59,8 @@ function WeekForecastChart(props) {
 								)
 							}
 							inputProps={{
-								'aria-label': 'Temperature unit switch',
+								'aria-label':
+									'Temperature unit switch for week forecast',
 							}}
 							disabled={chartData?.length === 0}
 						/>
@@ -133,10 +128,12 @@ function nextSevenDaysWeatherForecasts(
 		const minTemp = changeTempFromKelvinToCelsiusOrFahrenheit(
 			data?.temp?.min ?? 0,
 			currentTmpUnit,
+			1,
 		);
 		const maxTemp = changeTempFromKelvinToCelsiusOrFahrenheit(
 			data?.temp?.max ?? 0,
 			currentTmpUnit,
+			1,
 		);
 		const weatherDesc = capitalizeFirstLetter(
 			data?.weather[0]?.description,
