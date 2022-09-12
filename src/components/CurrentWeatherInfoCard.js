@@ -17,7 +17,7 @@ import useFetch from '../hooks/useFetch';
 import {
 	capitalizeFirstLetter,
 	changeTempFromKelvinToCelsiusOrFahrenheit,
-	formatAMPM,
+	formatAMPM
 } from '../utils/commonFunctions';
 function CurrentWeatherInfoCard(props) {
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
@@ -337,9 +337,16 @@ function getCurrentDayForecast(weatherData, currentTmpUnit = 'celsius') {
 		temp_max: tempMax = 0,
 		temp: currentTemp = 300,
 	} = weatherData?.main ?? {};
+	const timeZone = weatherData?.timezone ?? 0;
 	const windSpeed = weatherData?.wind?.speed ?? 0;
-	const sunsetTime = formatAMPM(new Date(weatherData?.sys?.sunset ?? '1'));
-	const sunriseTime = formatAMPM(new Date(weatherData?.sys?.sunrise ?? '1'));
+
+	const sunsetTime = formatAMPM(
+		new Date((weatherData?.sys?.sunset + timeZone) * 1000 ?? '1'),
+	);
+	const sunriseTime = formatAMPM(
+		new Date((weatherData?.sys?.sunrise + timeZone) * 1000 ?? '1'),
+	);
+
 	return {
 		cityName: capitalizeFirstLetter(cityName),
 		tempIconUrl,

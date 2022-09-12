@@ -7,9 +7,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import CurrentWeatherInfoCard from '../components/CurrentWeatherInfoCard';
 import WeekForecastChart from '../components/WeekForecastChart';
-import {
-	isValidUsZipCode
-} from '../utils/commonFunctions';
+import { isValidUsZipCode } from '../utils/commonFunctions';
 function HomePage() {
 	const [zipCode, setZipCode] = useState('10001');
 	const [shouldShowErrorInZipCodeInput, setShouldShowErrorInZipCodeInput] =

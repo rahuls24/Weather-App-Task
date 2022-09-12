@@ -13,12 +13,12 @@ import {
 	ResponsiveContainer,
 	Tooltip as ChartTooltip,
 	XAxis,
-	YAxis,
+	YAxis
 } from 'recharts';
 import useFetch from '../hooks/useFetch';
 import {
 	capitalizeFirstLetter,
-	changeTempFromKelvinToCelsiusOrFahrenheit,
+	changeTempFromKelvinToCelsiusOrFahrenheit
 } from '../utils/commonFunctions';
 function WeekForecastChart(props) {
 	const { zipCode = '10001' } = props;
