@@ -13,6 +13,9 @@ import Switch from '@mui/material/Switch';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { useMemo } from 'react';
 function HomePage() {
 	return (
 		<Container component='main' maxWidth='md'>
@@ -46,7 +49,76 @@ function HomePage() {
 
 export default HomePage;
 
-function WeatherInfoCard() {
+function WeatherInfoCard(props) {
+	const renderAdditionalInfo = useMemo(() => {
+		const windSpeedHumidityAndPressureInfo = [
+			{
+				name: 'Wind Speed',
+				value: `${23}kph`,
+			},
+			{
+				name: 'Humidity',
+				value: `${23}%`,
+			},
+			{
+				name: 'Pressure',
+				value: `${23}hPa`,
+			},
+		];
+		return (
+			<>
+				{windSpeedHumidityAndPressureInfo.map(section => {
+					return (
+						<Grid
+							container
+							spacing={{ xs: 2, md: 2 }}
+							columns={{ xs: 4, md: 12 }}
+						>
+							<Grid item xs={4} md={5}>
+								<Typography fontSize={'1.5rem'}>
+									{section.name}
+								</Typography>
+							</Grid>
+							<Grid item xs={4} md={1}>
+								<Typography
+									fontSize={'1.5rem'}
+									sx={{ fontWeight: 'bold' }}
+								>
+									{section.value}
+								</Typography>
+							</Grid>
+						</Grid>
+					);
+				})}
+				<Stack direction='row' alignItems='center' spacing={2}>
+					<Avatar
+						alt='Remy Sharp'
+						src='http://openweathermap.org/img/wn/10d@2x.png'
+						sx={{ width: 56, height: 56 }}
+					/>
+					<Typography
+						variant='body1'
+						gutterBottom
+						fontSize={'1.5rem'}
+					>
+						{'06:23 AM'}
+					</Typography>
+					<Avatar
+						alt='Remy Sharp'
+						src='http://openweathermap.org/img/wn/10d@2x.png'
+						sx={{ width: 56, height: 56 }}
+					/>
+					<Typography
+						variant='body1'
+						gutterBottom
+						fontSize={'1.5rem'}
+					>
+						{'06:23 PM'}
+					</Typography>
+				</Stack>
+			</>
+		);
+	}, []);
 	return (
 		<Card sx={{ marginTop: 2, padding: 2 }}>
 			<Stack
@@ -79,6 +151,7 @@ function WeatherInfoCard() {
 							gutterBottom
 							textAlign={'center'}
 							width='100%'
+							fontSize={'3rem'}
 						>
 							{'New York'}
 						</Typography>
@@ -98,17 +171,36 @@ function WeatherInfoCard() {
 							gutterBottom
 							textAlign={'center'}
 							width='100%'
+							fontSize={'1.5rem'}
 						>
 							{'light rain'}
 						</Typography>
 					</Box>
 				</Grid>
 				<Grid item xs={4} sm={4} md={6}>
-					<Typography>{'Feels Like'}</Typography>
-					<Typography>{'High Low'}</Typography>
-					<Typography>{'Wind Speed'}</Typography>
-					<Typography>{'Pressure'}</Typography>
-					<Typography>{'Sun Rise | Sun Set'}</Typography>
+					<Stack
+						direction='row'
+						alignItems='center'
+						justifyContent={'center'}
+						spacing={2}
+						sx={{ marginBottom: 3 }}
+					>
+						<ArrowUpwardIcon sx={{ fontSize: 24 }} />
+						<Typography
+							fontSize='1.5rem'
+							variant='button'
+							display='block'
+							gutterBottom
+						>{`${56}\u00b0`}</Typography>
+						<ArrowDownwardIcon sx={{ fontSize: 24 }} />
+						<Typography
+							fontSize='1.5rem'
+							variant='button'
+							display='block'
+							gutterBottom
+						>{`${46}\u00b0`}</Typography>
+					</Stack>
+					{renderAdditionalInfo}
 				</Grid>
 			</Grid>
 		</Card>
