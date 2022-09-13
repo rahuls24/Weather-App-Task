@@ -13,19 +13,23 @@ import {
 	ResponsiveContainer,
 	Tooltip as ChartTooltip,
 	XAxis,
-	YAxis
+	YAxis,
 } from 'recharts';
 import useFetch from '../hooks/useFetch';
 import {
 	capitalizeFirstLetter,
-	changeTempFromKelvinToCelsiusOrFahrenheit
+	changeTempFromKelvinToCelsiusOrFahrenheit,
 } from '../utils/commonFunctions';
+
 function WeekForecastChart(props) {
 	const { zipCode = '10001' } = props;
+
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
-	// We can hide appid by using env var becz it is part of  query parameter
-	const url = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1`;
-	const { data: rawNextSevenDaysForecast, loading } = useFetch(url);
+
+	// We can hide appid by using env var because it is part of  query parameter. So using env variable is meaningless here
+	const URL = ` https://api.openweathermap.org/data/2.5/forecast/daily?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1`;
+	const { data: rawNextSevenDaysForecast, loading, error } = useFetch(URL);
+
 	const chartData = useMemo(() => {
 		if (rawNextSevenDaysForecast !== null) {
 			const nextSevenDaysWeatherForecastsData =
@@ -86,7 +90,28 @@ function WeekForecastChart(props) {
 						<CircularProgress />
 					</Box>
 				)}
-				{!loading && (
+				{loading === false && typeof error === 'string' && (
+					<Box
+						sx={{
+							width: '100%',
+							display: 'flex',
+							justifyContent: 'center',
+						}}
+					>
+						<Typography
+							variant='h6'
+							gutterBottom
+							textAlign={'center'}
+							width='100%'
+							sx={{
+								fontSize: { xs: '1.5rem', lg: '3rem' },
+							}}
+						>
+							{capitalizeFirstLetter(error)}
+						</Typography>
+					</Box>
+				)}
+				{loading === false && error === null && (
 					<ResponsiveContainer width={'99%'} height={300}>
 						<LineChart
 							width={730}

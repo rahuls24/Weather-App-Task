@@ -22,7 +22,11 @@ function useFetch(url) {
 			})
 			.catch(err => {
 				setLoading(false);
-				setError('An error occurred. Awkward..');
+				if(err?.message==='canceled') return;
+				setError(
+					err?.response?.data?.message ??
+						'Something went wrong. Make sure you are entering a valid zip code and try again',
+				);
 			});
 		return () => {
 			source.cancel();

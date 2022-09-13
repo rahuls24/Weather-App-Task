@@ -1,3 +1,10 @@
+/**
+ *
+ * @param {string | number} tmpInKelvin temperature value of which you want to convert
+ * @param {'celsius' | 'fahrenheit' } changeOn temperature unit on which you want to convert
+ * @param {number} toFixed Maximum unit after decimal
+ * @returns {string} temperature after conversion
+ */
 export function changeTempFromKelvinToCelsiusOrFahrenheit(
 	tmpInKelvin,
 	changeOn = 'celsius',
@@ -11,18 +18,23 @@ export function changeTempFromKelvinToCelsiusOrFahrenheit(
 	}
 	return result.toFixed(toFixed);
 }
+
 export function capitalizeFirstLetter(string = '') {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+/**
+ *
+ * @param {Date} date
+ * @returns {string} formatted time in 12 hr format
+ */
 export function formatAMPM(date) {
 	let hours = twoDigits(date.getUTCHours());
-	let minutes = twoDigits(date.getUTCMinutes());
+	const minutes = twoDigits(date.getUTCMinutes());
 	const ampm = hours >= 12 ? 'pm' : 'am';
 	hours = hours % 12;
 	hours = hours ? hours : 12; // the hour '0' should be '12'
-	minutes = minutes < 10 ? `0${minutes}` : minutes;
 	const strTime = hours + `:${minutes} ${ampm}`;
-	console.log(strTime, 'pant');
 	return strTime;
 }
 

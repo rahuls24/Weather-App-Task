@@ -17,15 +17,18 @@ import useFetch from '../hooks/useFetch';
 import {
 	capitalizeFirstLetter,
 	changeTempFromKelvinToCelsiusOrFahrenheit,
-	formatAMPM
+	formatAMPM,
 } from '../utils/commonFunctions';
 function CurrentWeatherInfoCard(props) {
+	const { zipCode = '10001' } = props;
+
 	const [currentTmpUnit, setCurrentTmpUnit] = useState('celsius');
 	const [shouldViewAdditionInfo, setShouldViewAdditionInfo] = useState(false);
-	const { zipCode = '10001' } = props;
-	// We can hide appid by using env var becz it is part of  query parameter
-	const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1`;
-	const { data: rawCurrentDayForecast, loading } = useFetch(url);
+
+	// We can hide appid by using env var because it is part of  query parameter. So using env variable is meaningless here
+	const URL = `https://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=20571ab45c74dc2a1897b60c5b8047a1`;
+	const { data: rawCurrentDayForecast, loading, error } = useFetch(URL);
+
 	const currentDayForecastData = getCurrentDayForecast(
 		rawCurrentDayForecast,
 		currentTmpUnit,
@@ -43,6 +46,7 @@ function CurrentWeatherInfoCard(props) {
 		tempMax,
 		tempMin,
 	} = currentDayForecastData;
+
 	const renderAdditionalInfo = useMemo(() => {
 		const windSpeedHumidityAndPressureInfo = [
 			{
@@ -150,32 +154,36 @@ function CurrentWeatherInfoCard(props) {
 		);
 	}, [windSpeed, pressure, humidity, sunsetTime, sunriseTime]);
 
-	const additionInfoViewSwitch = (
-		<Stack
-			direction='row'
-			spacing={1}
-			justifyContent='center'
-			alignItems='center'
-		>
-			<Tooltip title='Hide Additional Info'>
-				<Typography>Hide</Typography>
-			</Tooltip>
+	const additionInfoViewSwitch = useMemo(() => {
+		return (
+			<Stack
+				direction='row'
+				spacing={1}
+				justifyContent='center'
+				alignItems='center'
+			>
+				<Tooltip title='Hide Additional Info'>
+					<Typography>Hide</Typography>
+				</Tooltip>
 
-			<Switch
-				checked={shouldViewAdditionInfo}
-				onChange={() =>
-					setShouldViewAdditionInfo(!shouldViewAdditionInfo)
-				}
-				inputProps={{
-					'aria-label':
-						'Temperature unit switch for current day forecast',
-				}}
-			/>
-			<Tooltip title='Show Additional Info'>
-				<Typography>Show</Typography>
-			</Tooltip>
-		</Stack>
-	);
+				<Switch
+					checked={shouldViewAdditionInfo}
+					onChange={() =>
+						setShouldViewAdditionInfo(!shouldViewAdditionInfo)
+					}
+					inputProps={{
+						'aria-label':
+							'Temperature unit switch for current day forecast',
+					}}
+					disabled={typeof error === 'string'?true:false}
+				/>
+				<Tooltip title='Show Additional Info'>
+					<Typography>Show</Typography>
+				</Tooltip>
+			</Stack>
+		);
+	}, [shouldViewAdditionInfo,error]);
+
 	return (
 		<Card sx={{ marginTop: 2, padding: 2 }}>
 			<Stack
@@ -221,7 +229,28 @@ function CurrentWeatherInfoCard(props) {
 					<CircularProgress />
 				</Box>
 			)}
-			{!loading && (
+			{loading === false && typeof error === 'string' && (
+				<Box
+					sx={{
+						width: '100%',
+						display: 'flex',
+						justifyContent: 'center',
+					}}
+				>
+					<Typography
+						variant='h6'
+						gutterBottom
+						textAlign={'center'}
+						width='100%'
+						sx={{
+							fontSize: { xs: '1.5rem', lg: '3rem' },
+						}}
+					>
+						{capitalizeFirstLetter(error)}
+					</Typography>
+				</Box>
+			)}
+			{loading === false && error === null && (
 				<Grid
 					container
 					spacing={{ xs: 2, md: 3 }}
@@ -235,7 +264,6 @@ function CurrentWeatherInfoCard(props) {
 									gutterBottom
 									textAlign={'center'}
 									width='100%'
-									// fontSize={'3rem'}
 									sx={{
 										fontSize: { xs: '1.5rem', lg: '3rem' },
 									}}
@@ -323,6 +351,7 @@ function CurrentWeatherInfoCard(props) {
 	);
 }
 export default CurrentWeatherInfoCard;
+
 // Util Function
 function getCurrentDayForecast(weatherData, currentTmpUnit = 'celsius') {
 	const cityName = weatherData?.name ?? 'New York';
@@ -341,12 +370,15 @@ function getCurrentDayForecast(weatherData, currentTmpUnit = 'celsius') {
 	const windSpeed = weatherData?.wind?.speed ?? 0;
 
 	const sunsetTime = formatAMPM(
-		new Date((weatherData?.sys?.sunset + timeZone) * 1000 ?? '1'),
+		new Date(
+			(Number(weatherData?.sys?.sunset) + Number(timeZone)) * 1000 ?? 1,
+		),
 	);
 	const sunriseTime = formatAMPM(
-		new Date((weatherData?.sys?.sunrise + timeZone) * 1000 ?? '1'),
+		new Date(
+			(Number(weatherData?.sys?.sunrise) + Number(timeZone)) * 1000 ?? 1,
+		),
 	);
-
 	return {
 		cityName: capitalizeFirstLetter(cityName),
 		tempIconUrl,
